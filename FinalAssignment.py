@@ -16,7 +16,15 @@
                     Send- Wait Protocol 
                         complete and in order
                     four sockets 
-                        Csin Csout Crin Crout  
+                        Csin Csout Crin Crout  //int between 1024-64000
+                How to start channel: 
+                    parameters/ check all 
+                    create/ bind the sockets 
+                    connect all out sockets 
+                    set default port numbers used by sender 
+                        set them as distinct 
+                    infinite loop/ main 
+
             Receiver
                 two sockets 
                 recieve packets 

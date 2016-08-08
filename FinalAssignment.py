@@ -2,7 +2,7 @@
     Morgan Peters 53781684 
     and 
     Nicole Steinke 46721931
-    50/50 
+
     '''
 
     ''' Three Programs (UDP) - SOCK_DGRAM  

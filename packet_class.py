@@ -32,4 +32,5 @@ class Packet:
 	"""Checks self.magicno = 0x497E else drops the packet"""
 	if self.magicno != MAGICNO:
 	    print("ERROR")
+		return False
 	    # drop packet imediately

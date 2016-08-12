@@ -20,12 +20,48 @@ def reciever(port_rin, port_rout, file_name):
     
     # bind() both sockets
     sock_rin.bind(IP, port_rin)
-    sock_rout.bind(IP, port_rout)
+    sock_rout.bind(IP, port_rout) 
  
     # connect() rout set default to port_num of crin 
-    
+    sock_rout.connect(IP, port_crin) #check out how to import crin
+
     #intialization / check file_name so if it does
     open(file_name)
     if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
         exit(-1) 
     expected = 0 #local int var 
+
+    # if successful loop
+    success = True
+    while success:
+
+    # wait() for rin 
+    # blocking style 
+        if check_magicno(self) == True: 
+            if self.ptype == PTYPE_DATA
+                if rcvd.seqno != self.seqno:
+                    self.magicno = 0x497E
+                    self.ptype = PTYPE_ACK
+                    self.seqno = rcvd.seqno
+                    self.dataLen = 0
+                    success = False
+            # send to rout 
+            if rcvd.seqno == self.seqno
+                self.magicno = 0x497E
+                self.ptype = PTYPE_ACK
+                self.seqno = rcvd.seqno
+                self.dataLen = 0
+            # send to rout 
+            
+     
+    expected = 1-expected
+
+        if rcvd.dataLen > 0 
+            # append data in file
+            #append(rcvd.data) 
+            # restart loop 
+        else
+            close(file_name) 
+            close(sock_rin)
+            close(sock_rout)
+            exit(0)

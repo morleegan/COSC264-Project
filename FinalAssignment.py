@@ -125,7 +125,7 @@
                         start loop again 
                     packet type != dataPacket
                         stop / restart loop
-                    rcvd.seqno != expected seqno
+                    rcvd.seqno != seqno
                             magicno = 0x497E
                             type = acknowledgementPacket
                             seqno = rcvd.seqno

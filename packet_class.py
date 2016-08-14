@@ -22,7 +22,7 @@ class Packet:
 	"""Checks type of packet with length of packet"""
 	if self.ptype == acknowledgementPacket and self.dataLen != 0:
 	    # drop packet
-	    pass
+	    raise Exception("Corrupt Packet")
 	
 	if self.ptype == dataPacket and self.dataLen == 0:
 	    # end of transmitted file
@@ -31,6 +31,10 @@ class Packet:
     def check_magicno(self):
 	"""Checks self.magicno = 0x497E else drops the packet"""
 	if self.magicno != MAGICNO:
+<<<<<<< HEAD
 	    print("ERROR")
 		return False
+=======
+>>>>>>> 9b7b2124ad0824a0558a6e76d7af12a848d48edc
 	    # drop packet imediately
+	    raise ValueError("ERROR: Expected value to be 0x497E")

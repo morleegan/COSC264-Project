@@ -1,0 +1,9 @@
+#ide
+.idea/
+.*~
+*~
+*.log
+*.pyc
+
+lab1TAcode.py
+*.pl

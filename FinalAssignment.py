@@ -123,7 +123,7 @@
                         -blocking style 
                     magicno != 0x497E 
                         start loop again 
-                    packet type != dataPacket
+                packet type != dataPacket
                         stop / restart loop
                     rcvd.seqno != seqno
                             magicno = 0x497E

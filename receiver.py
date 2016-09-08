@@ -41,11 +41,9 @@ class Receiver:
 
 
     def receive_socket(self):
-        socket_rout = self.create_sockets(self.rout)
-        socket_rin = self.create_sockets(self.rin)
 
         # connect() rout set default to port_num of crin
-        socket_rout.connect((IP, self.crin))
+        self.socket_rout.connect((IP, self.crin))
 
         self.check_file()
         open(self.file_name)
@@ -55,20 +53,20 @@ class Receiver:
         success = True
         while success:
             # wait on rin for incoming packet (use blocking call)
-            received = socket_rin.recv(MAX_READ_SIZE)
+            received = self.socket_rin.recv(MAX_READ_SIZE)
 
             # once have received packet do checks
             # when different prepare ack packet
-            if not check_failure(received, expected):
+            if not self.check_failure(received, expected):
                 received_ack = Packet(MAGICNO, PTYPE_ACK, received.seqno,
                                       0)
                 # send packet via rout to channel
-                socket_rout.send(received_ack)
+                self.socket_rout.send(received_ack)
                 continue  # return to beginning of loop
 
             if received.seqno == expected:
                 received_ack = Packet(MAGICNO, PTYPE_ACK, received.seqno, 0)
-                socket_rout.send(received_ack)
+                self.socket_rout.send(received_ack)
                 # send received_ack via rout to channel
                 expected += 1
 
@@ -79,15 +77,15 @@ class Receiver:
 
             elif received.dataLen == 0:
                 exit(0)  # exit program
-                self.close_sockets(socket_rin, socket_rout)
+                self.close_sockets()
 
             else:
                 continue  # return to start of loop
 
     def check_failure(self, received_pack, expected):
             #  if packet is lost
-            if received_pack.check_magicno() and received_pack.ptype == PTYPE_DATA or \
-                            received_pack.seqno != expected:
+            if received_pack.check_magicno() and received_pack.ptype == \
+                    PTYPE_DATA or received_pack.seqno != expected:
                 return False
 
     def check_ports(self):

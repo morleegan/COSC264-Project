@@ -115,3 +115,6 @@ class Sender:
         self.socket_sin.close()
         self.socket_sout.close()
         self.file_in.close()
+
+if __name__ == "__main__":
+

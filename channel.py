@@ -1,4 +1,4 @@
-
+import argparse
 import socket  # for sockets
 import select  # for listening nicely on sockets
 import random  # for uniform
@@ -52,7 +52,7 @@ class Channel:
                     #  if the socket does not have MAGICNO correct get next
                     continue
                 received = sock.recv(MAX_READ_SIZE)
-                random_var = random.uniform(0, 1)
+                random_var = random()
                 if random_var < self.p_rate:
                     continue
                 elif sock == self.socket_sin:
@@ -87,4 +87,17 @@ class Channel:
         self.socket_sout.close()
 
 
+if __name__ == "__main__":
 
+    args = argparse.ArgumentParser()
+    args.add_argument("csout", help="Channel Sender out port", type=int)
+    args.add_argument("csin", help="Channel Sender in port", type=int)
+    args.add_argument("crout", help="Channel Receiver out port", type=int)
+    args.add_argument("crin", help="Channel Receiver in port", type=int)
+    args.add_argument("sin", help="Sender in port", type=int)
+    args.add_argument("rin", help="Receiver in port", type=int)
+    args.add_argument("prate", help="P rate", type=float)
+    args = args.parse_args()
+
+    channel = Channel(args.csin, args.csout, args.crout, args.crin,
+                      args.sin, args.rin, args.prate)

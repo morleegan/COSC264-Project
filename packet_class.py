@@ -22,10 +22,6 @@ class Packet:
         self.dataLen = dataLen
         # data: depends on dataLength and contains the user data
         self.data = data
-        if data is None:
-            self.data = []
-        else:
-            self.data.append(data)  # appending data
 
         """def check_ack_packet(self):
         #Checks the packet is an ack packet with length of ack packet

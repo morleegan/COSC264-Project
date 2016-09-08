@@ -106,7 +106,7 @@ class Sender:
 
     def check_file(self):
         # check if supplied filename exits and is readable else exit sender
-        if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
+        if not(os.path.isfile(PATH) and os.access(PATH, os.R_OK)):
             self.file_in = open(self.file_name, 'rb')
         else:
             print("Supplied file does not exist or is not readable")

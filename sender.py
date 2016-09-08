@@ -118,3 +118,14 @@ class Sender:
 
 if __name__ == "__main__":
 
+    args = argparse.ArgumentParser()
+
+    args.add_argument("sin", help="Sender in port", type=int)
+    args.add_argument("sout", help="Sender out port", type=int)
+    args.add_argument("csin", help="Channel Sender in port", type=int)
+    args.add_argument("file_in", help="Filename of sender", type=str)
+
+    args = args.parse_args()
+
+    sender = Sender(args.sin, args.sout, args.csin, args.file_name)
+

@@ -26,8 +26,9 @@ class Sender:
         self.file_name = file_name
         self.socket_sin = self.create_sockets(self.sin)
         self.socket_sout = self.create_sockets(self.sout)
+        self.file_in = None
         self.exit_flag = False
-        self.file_in = self.check_file()
+        self.check_file()
         self.send_next = 0
 
     def create_sockets(self, port):

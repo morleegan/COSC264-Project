@@ -1,6 +1,7 @@
 from packet_class import *  # Our initialization and checks
 import os
 import socket  # or sockets
+import argparse
 
 PTYPE_DATA = 0
 PTYPE_ACK = 1
@@ -103,5 +104,18 @@ class Receiver:
         self.socket_rin.close()
 
 
+if __name__ == "__main__":
+
+    args = argparse.ArgumentParser()
+
+    args.add_argument("rin", help="Receiver in port", type=int)
+    args.add_argument("rout", help="Receiver out port", type=int)
+    args.add_argument("crin", help="Receiver Sender in port", type=int)
+    args.add_argument("file_out", help="Filename of receiver", type=str)
+
+    args = args.parse_args()
+
+    receiver = Receiver(args.rin, args.rout, args.rsin, args.file_out)
+    receiver.receive_socket()
 
 

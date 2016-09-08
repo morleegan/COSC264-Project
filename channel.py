@@ -1,7 +1,7 @@
 import argparse
 import socket  # for sockets
 import select  # for listening nicely on sockets
-import random  # for uniform
+from random import random  # for uniform
 from packet_class import *
 
 PTYPE_DATA = 0
@@ -44,8 +44,7 @@ class Channel:
     def send_to(self):
         self.connect_socket()
         while True:
-            socket_read, socket_write, error_socket = select.select(
-                    [self.c_sin, self.c_rin], [], [])
+            socket_read, _, _ = select.select([self.c_sin, self.c_rin], [], [])
 
             for sock in socket_read:
                 if not sock.check_magicno():
@@ -59,8 +58,6 @@ class Channel:
                     self.send_packet(self.socket_sin, received)
                 elif sock == self.socket_rin:
                     self.send_packet(self.socket_rin, received)
-                elif error_socket == TIMEOUT:
-                    self.socket_close()
 
     def send_packet(self, socket1, received):
         try:
@@ -101,3 +98,4 @@ if __name__ == "__main__":
 
     channel = Channel(args.csin, args.csout, args.crout, args.crin,
                       args.sin, args.rin, args.prate)
+    channel.send_to()

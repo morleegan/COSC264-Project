@@ -4,11 +4,15 @@ import select  # for listening nicely on sockets
 import random  # for uniform
 from packet_class.py import *
 
+PTYPE_DATA = 0
+PTYPE_ACK = 1
 
+MAGICNO = 0x497E
 MAX_READ_SIZE = 512  # bytes
 TIMEOUT = 1  # 1 second
 PATH = './file.txt'
 IP = '127.0.0.1'
+
 
 
 class Channel:

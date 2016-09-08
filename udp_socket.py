@@ -1,20 +1,31 @@
 
+import argparse
+from packet_class import *
+from receiver import *
+from sender import *
+from channel import *
+
+class UDPSocket:
+    #  parent class
+
+    def shared_function(self):
+        #  accesses class properties
+        pass
+
+    def second_shared(param):
+        # unable to access
+        pass
+
 if __name__ == "__main__":
 
-    port_sout = sys.argv[0]
-    file_name_in = sys.argv[1]
-    port_csin = sys.argv[2]
-    port_csout = sys.argv[3]
-    port_sin = sys.argv[4]
-    p_rate = sys.argv[5]
-    port_rin = sys.argv[6]
-    port_rout = sys.argv[7]
-    port_crin = sys.argv[8]
-    file_name_out = sys.argv[9]
+    # This is where you'd do the argparse stuff
 
-    sender(port_sin, port_sout, port_csin, file_name_in)
-    channel(port_csin, port_csout, port_rout, port_rin, port_sin, port_rin,
-            p_rate)
-    receiver(port_rin, port_rout, port_crin, file_name_out)
+    args = argparse.ArgumentParser()
 
-    # somehow read from command line
+    args.add_argument("csin", help="Channel Sender in port", type=int)
+
+    args = args.parse_args()
+
+    sender = Sender(args.csin)
+    channel = Channel(args.csin)
+    receiver = Receiver(args.csin)

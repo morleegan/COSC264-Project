@@ -1,8 +1,11 @@
-
-from packet_class import * # Our initialization and checks
+from packet_class import *  # Our initialization and checks
 import os
 import socket  # or sockets
 
+PTYPE_DATA = 0
+PTYPE_ACK = 1
+
+MAGICNO = 0x497E
 MAX_READ_SIZE = 512  # bytes
 TIMEOUT = 1  # 1 second
 PATH = './file.txt'
@@ -10,40 +13,38 @@ IP = '127.0.0.1'
 
 
 class Receiver:
+    """Receiver Program"""
+
     def __init__(self, rin, rout, crin, file_name):
         self.rin = rin
         self.rout = rout
         self.crin = crin
         self.file_name = file_name
 
-    def receiver(self):
-        """Receiver Program"""
-        if not 1024 < self.rin < 64000 or 1024 < self.rout < 64000:
-            print("the port numbers were not between 1024 and 64000")
-            exit(-1)
-
-        try:  # creating sockets
-            # accepts packets from C-rout
-            sock_rin = socket.socket(socket.AF_INET,
-                                     socket.SOCK_DGRAM)
-            # sends to C-rin
-            sock_rout = socket.socket(socket.AF_INET,
-                                      socket.SOCK_DGRAM)
+    def create_sockets(self,port):
+        #socket creation
+        self.check_ports()
+        try:
+            #  accepts packets from channel
+            new_socket = socket.socket(socket.AF_INET,
+                                       socket.SOCK_DGRAM)
         except:
-            raise Exception("Error: no sockets created")
+            #  ailed to create socket... quit
+            exit(-1)
 
         # bind() both sockets
-        sock_rin.bind((IP, self.rin))
-        sock_rout.bind((IP, self.rout))
+        new_socket.bind((IP, port))
+
+        return new_socket
+
+    def receive_socket(self):
+        socket_rout = self.create_sockets(self.rout)
+        socket_rin = self.create_sockets(self.rin)
 
         # connect() rout set default to port_num of crin
-        sock_rout.connect((IP, self.crin))
+        socket_rout.connect((IP, self.crin))
 
-        # initialization / check file_name so if it does
-        open(self.file_name)
-        if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
-            exit(-1)
-
+        self.check_file()
         expected = 0  # local int var
 
         # if initialization successful then loop
@@ -62,25 +63,35 @@ class Receiver:
 
             if rcvd.seqno == expected:
                 rcvd_ack = Packet(MAGICNO, PTYPE_ACK, rcvd.seqno, 0)
-                sock_rout.send(rcvd_ack)  # send rcvd_ack via rout to channel
+                sock_rout.send(
+                    rcvd_ack)  # send rcvd_ack via rout to channel
                 expected = 1 - expected
 
             if rcvd.dataLen > 0:  # if received packet contains data then
-                self.file_name.append(rcvd.data)  # append data to output file and
+                self.file_name.append(
+                    rcvd.data)  # append data to output file and
                 continue  # stop processing
 
             elif rcvd.dataLen == 0:
-                self.file_name.close()
-                sock_rin.close()  # close output file
-                sock_rout.close()  # close all sockets
                 exit(0)  # exit program
+                self.close_sockets()
 
             else:
                 continue  # return to start of loop
 
-        """
-        you shouldn't need this the program will close in the loop
-        close(file_name) # close output file
-        close(sock_rin)  # close all sockets
-        close(sock_rout)
-        """
+    def check_ports(self):
+        if not 1024 < self.rin < 64000 or 1024 < self.rout < 64000:
+            print("the port numbers were not between 1024 and 64000")
+            exit(-1)
+
+    def check_file(self):
+        open(self.file_name)
+        if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
+            exit(-1)
+
+    def close_sockets(self, socket1, socket2):
+        self.file_name.close()  # close output file
+        socket1.close()  # close all sockets
+        socket2.close()
+
+

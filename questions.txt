@@ -1,0 +1,18 @@
+1. Explain notion of deadlock in context of networking protocols and describe the particular deadlock situation in our case. i.e. What can go wrong and when in case certain packets are lost?
+Deadlock occurs when two or more processes are waiting for each other
+Here the sender and the receiver are waiting for each other when...
+
+2. What is magicno field good for?
+Good for checking if packet was changed/corrupted in transmisson, since we set and expect the packet to have this certain number in this field so when it does not we assume it has been corrupted and we drop it????
+
+3. Explain what the select() function is doing and why it is useful for the channel (and in another way for the sender).
+The select function is able to deal with multiple sockets(, returning three fields, read, write, and error). Select waits until a socket is ready. It will then proccess the incoming data on the socket (and respond). Once done proccessing, select returns to waiting until the a socket is ready. Select has a timeout field, with which select will wait for a particular thing to occur, in our case with the sender, select will wait for response on this socket, and if none is received, it will then retransmit.
+The select function is useful for the channel, since the channel has more than one socket which it listens to/receives data on. Select allows the channel to simultaneously check both of these sockets, and when one receives/is ready, the channel will process this.
+Since the select function allows for a timeout value, it is useful for the sender as it can then set a timeout value, some amout of time the sender is willing to wait on this socket for an acknowledgement packet from the receiver.
+The select() function is able to deal with multiple event sources. Select waits until one of the file descripters become ready, and then it will process the event/file descripter and respond. Once done goes back to waiting till another event arrives.
+
+4. Explain how you have checked whether or not the file was transferred correctly (ie. the receivers copy == transmitters)
+
+5. Packet loss probabilty, make graphs, and explain results
+
+6. Assuming things, derive and justify an expression for average total num of packets that need to be sent to transmit entire file. Compare to average total num of packets observed in experiments.

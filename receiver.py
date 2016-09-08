@@ -36,9 +36,7 @@ class Receiver:
 
         # bind() both sockets
         new_socket.bind((IP, port))
-
         return new_socket
-
 
     def receive_socket(self):
 
@@ -58,15 +56,11 @@ class Receiver:
             # once have received packet do checks
             # when different prepare ack packet
             if not self.check_failure(received, expected):
-                received_ack = Packet(MAGICNO, PTYPE_ACK, received.seqno,
-                                      0)
-                # send packet via rout to channel
-                self.socket_rout.send(received_ack)
+                self.reply_to(received)
                 continue  # return to beginning of loop
 
             if received.seqno == expected:
-                received_ack = Packet(MAGICNO, PTYPE_ACK, received.seqno, 0)
-                self.socket_rout.send(received_ack)
+                self.reply_to(received)
                 # send received_ack via rout to channel
                 expected += 1
 
@@ -76,11 +70,16 @@ class Receiver:
                 continue  # stop processing
 
             elif received.dataLen == 0:
-                exit(0)  # exit program
                 self.close_sockets()
+                exit(0)  # exit program
 
             else:
                 continue  # return to start of loop
+
+    def reply_to(self, received):
+        received_ack = Packet(MAGICNO, PTYPE_ACK, received.seqno, 0)
+        # send packet via rout to channel
+        self.socket_rout.send(received_ack)
 
     def check_failure(self, received_pack, expected):
             #  if packet is lost

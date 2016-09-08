@@ -89,8 +89,8 @@ class Receiver:
                 return False
 
     def check_ports(self):
-        if not 1024 < self.rin < 64000 or 1024 < self.rout < 64000:
-            print("the port numbers were not between 1024 and 64000")
+        if not(1024 < self.rin < 64000 or 1024 < self.rout < 64000):
+            print("the port numbers are not between 1024 and 64000")
             exit(-1)
 
     def check_file(self):
@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
     args = args.parse_args()
 
-    receiver = Receiver(args.rin, args.rout, args.rsin, args.file_out)
+    receiver = Receiver(args.rin, args.rout, args.crin, args.file_out)
     receiver.receive_socket()
 
 

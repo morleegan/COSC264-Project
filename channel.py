@@ -44,7 +44,7 @@ class Channel:
     def send_to(self):
         self.connect_socket()
         while True:
-            socket_read, _, _ = select.select([self.c_sin, self.c_rin], [], [])
+            socket_read, _, _ = select.select([self.socket_sin, self.socket_rin], [], [])
 
             for sock in socket_read:
                 if not sock.check_magicno():

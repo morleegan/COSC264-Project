@@ -3,6 +3,7 @@ import socket  # for sockets
 import select  # for listening nicely on sockets
 import os
 import sys
+import argparse
 
 PTYPE_DATA = 0
 PTYPE_ACK = 1
@@ -128,4 +129,4 @@ if __name__ == "__main__":
     args = args.parse_args()
 
     sender = Sender(args.sin, args.sout, args.csin, args.file_name)
-
+    sender.outer_send()

@@ -105,12 +105,11 @@ class Sender:
 
     def check_file(self):
         # check if supplied filename exits and is readable else exit sender
-        file_in = open(self.file_name, 'rb')
-        if not (os.path.isfile(PATH) and os.access(PATH, os.R_OK)):
+        if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
+            self.file_in = open(self.file_name, 'rb')
+        else:
             print("Supplied file does not exist or is not readable")
             exit(-1)
-        else:
-            return file_in
 
     def close_sockets(self):
         self.socket_sin.close()
@@ -128,5 +127,5 @@ if __name__ == "__main__":
 
     args = args.parse_args()
 
-    sender = Sender(args.sin, args.sout, args.csin, args.file_name)
+    sender = Sender(args.sin, args.sout, args.csin, args.file_in)
     sender.outer_send()

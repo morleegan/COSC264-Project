@@ -37,6 +37,7 @@ def sender(port_sin, port_sout, c_sin, file_name):
 
     sender_next = 0  # local int var
     exit_flag = False  # local boolean flag
+    sent_count = 0
 
     # enter loop
     while True:
@@ -73,7 +74,7 @@ def sender(port_sin, port_sout, c_sin, file_name):
                 if read_sock:
                     if not (read_sock.magicno != MAGICNO or read_sock.ptype != 1
                             or read_sock.dataLen != 0 or read_sock.seqno != sender_next):
-                        sender_next += 1
+                        sent_count += 1
 
                         if exit_flag:
                             print('Total Packets Sent:', sent_packet_count)

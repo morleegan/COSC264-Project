@@ -17,7 +17,7 @@ IP = '127.0.0.1'
 
 class Channel:
     """Channel Program"""
-    def __init__(self,c_sin, c_sout, c_rout, c_rin, sin, rin, p_rate):
+    def __init__(self, c_sin, c_sout, c_rout, c_rin, sin, rin, p_rate):
         self.c_sin = c_sin
         self.c_sout = c_sout
         self.c_rout = c_rout

@@ -20,6 +20,8 @@ class Receiver:
         self.rout = rout
         self.crin = crin
         self.file_name = file_name
+        self.socket_rin = self.create_sockets(self.rin)
+        self.socket_rout = self.create_sockets(self.rout)
 
     def create_sockets(self, port):
         #  socket creation
@@ -37,20 +39,6 @@ class Receiver:
 
         return new_socket
 
-    def check_ports(self):
-        if not 1024 < self.rin < 64000 or 1024 < self.rout < 64000:
-            print("the port numbers were not between 1024 and 64000")
-            exit(-1)
-
-    def check_file(self):
-        open(self.file_name)
-        if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
-            exit(-1)
-
-    def close_sockets(self, socket1, socket2):
-        self.file_name.close()  # close output file
-        socket1.close()  # close all sockets
-        socket2.close()
 
     def receive_socket(self):
         socket_rout = self.create_sockets(self.rout)
@@ -96,12 +84,26 @@ class Receiver:
             else:
                 continue  # return to start of loop
 
+    def check_failure(self, received_pack, expected):
+            #  if packet is lost
+            if received_pack.check_magicno() and received_pack.ptype == PTYPE_DATA or \
+                            received_pack.seqno != expected:
+                return False
 
-def check_failure(received_pack, expected):
-        #  if packet is lost
-        if received_pack.check_magicno() and received_pack.ptype == PTYPE_DATA or \
-                        received_pack.seqno != expected:
-            return False
+    def check_ports(self):
+        if not 1024 < self.rin < 64000 or 1024 < self.rout < 64000:
+            print("the port numbers were not between 1024 and 64000")
+            exit(-1)
+
+    def check_file(self):
+        open(self.file_name)
+        if os.path.isfile(PATH) and os.access(PATH, os.R_OK):
+            exit(-1)
+
+    def close_sockets(self):
+        self.file_name.close()  # close output file
+        self.socket_rout.close()  # close all sockets
+        self.socket_rin.close()
 
 
 

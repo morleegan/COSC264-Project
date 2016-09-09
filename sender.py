@@ -28,6 +28,8 @@ class Sender:
         self.check_file()
         self.send_next = 0
 
+        self.packet_queue = []
+
     def create_sockets(self, port):
         self.check_ports(port)
         # create sockets
@@ -48,35 +50,42 @@ class Sender:
             print("Invalid Port numbers")
             exit(-1)
 
+    def load_packets(self):
+        file_data = self.file_in.read()
+        file_index = 0
+        fine_length = len(file_data) + MAX_READ_SIZE
+        while file_index > fine_length:
+            buffer = file_data[file_index:file_index + MAX_READ_SIZE]
+            new_packet = Packet(MAGICNO,
+                                PTYPE_DATA,
+                                self.send_next,
+                                len(buffer),
+                                buffer)
+            self.packet_queue.append(new_packet)
+
+            file_index += MAX_READ_SIZE
+
     def outer_send(self):
         self.socket_sout.connect((IP, self.csin))
         sent_count = 0
-
+        counter = 1
         while not self.exit_flag:
-            buffer = self.file_in.read(MAX_READ_SIZE)
-            buffer_size = sys.getsizeof(buffer, bytes)
+            print(counter)
+            if counter > len(self.packet_queue) or \
+                            self.packet_queue[counter].dataLen() == 0:
+                last = Packet(MAGICNO, PTYPE_DATA, self.send_next, 0)
+                self.inner_send(last, sent_count)
+                self.close_sockets()
+                exit(0)
 
-            if buffer_size == 0:
-                packet_sent = Packet(MAGICNO, PTYPE_DATA, self.send_next, 0)
-                self.exit_flag = True
-            elif buffer_size > 0:
-                packet_sent = Packet(MAGICNO, PTYPE_DATA, self.send_next,
-                                     buffer_size, buffer)
-            else:
-                print("Impossible: Exiting")
-                exit(-1)
-
-            self.inner_send(packet_sent, sent_count)
+            self.inner_send(self.packet_queue[counter], sent_count)
             sent_count += 1
+            counter += 1
 
     def inner_send(self, packet_sent, sent_count):
         processing = True
         while processing:
             if not Sender.send_packet(self.socket_sout, packet_sent):
-                continue
-
-            if not self.socket_sin:
-                print("Not socket_in")
                 continue
 
             received = self.rec_packet()
@@ -92,7 +101,7 @@ class Sender:
                             exit(0)
 
                 elif not self.exit_flag:
-                    processing = True
+                    processing = False
 
 
     @staticmethod

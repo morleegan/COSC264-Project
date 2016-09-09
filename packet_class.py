@@ -55,9 +55,12 @@ class Packet:
         byte_p_type = self.p_type.to_bytes(1, byteorder='big')
         byte_seqno = self.seqno.to_bytes(1, byteorder='big')
         byte_data_len = self.dataLen.to_bytes(2, byteorder='big')
-
-        byte_s = byte_magicno + byte_p_type + byte_seqno \
-                    + byte_data_len + self.data
+        if self.data is None:
+            byte_s = byte_magicno + byte_p_type + byte_seqno \
+                        + byte_data_len + bytes(0)
+        else:
+            byte_s = byte_magicno + byte_p_type + byte_seqno \
+                     + byte_data_len + self.data
         return byte_s
 
     @staticmethod

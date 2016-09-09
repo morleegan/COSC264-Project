@@ -36,6 +36,8 @@ class Sender:
         try:
             new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             new_socket.bind((IP, port))
+            if port == self.sin:
+                new_socket.settimeout(.5)
             return new_socket
         except:
             print("Failed to create socket.")
@@ -71,16 +73,14 @@ class Sender:
     def inner_send(self, packet_sent, sent_count):
         processing = True
         while processing:
-            if not self.send_packet(self.socket_sout, packet_sent):
+            if not Sender.send_packet(self.socket_sout, packet_sent):
                 continue
 
             if not self.socket_sin:
                 print("Not socket_in")
                 continue
 
-            received_bytes = self.socket_sin.recv(MAX_READ_SIZE)
-            received = received_bytes.deserialize()
-            print("Packet Received")
+            received = self.rec_packet()
             if not received:
                 continue
             else:
@@ -98,7 +98,8 @@ class Sender:
                 else:
                     continue
 
-    def send_packet(self, socket1, received):
+    @staticmethod
+    def send_packet(socket1, received):
         try:
             # change packet into bytes to send
             received = received.serialize()
@@ -108,6 +109,15 @@ class Sender:
         except:
             print("Connection Failed")
             return False
+
+    def rec_packet(self):
+        try:
+            received_bytes = self.socket_sin.recv(MAX_READ_SIZE)
+            received = Packet.deserialize(received_bytes)
+            print("Successfully Received")
+            return received
+        except:
+            print("Failed to Receive")
 
     def check_file(self):
         # check if supplied filename exits and is readable else exit sender

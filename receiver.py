@@ -31,19 +31,20 @@ class Receiver:
             #  accepts packets from channel
             new_socket = socket.socket(socket.AF_INET,
                                        socket.SOCK_DGRAM)
+            new_socket.bind((IP, port))
+            print("Socket Created")
+            return new_socket
         except:
             #  ailed to create socket... quit
             exit(-1)
 
         # bind() both sockets
-        new_socket.bind((IP, port))
-        return new_socket
 
     def receive_socket(self):
 
         # connect() rout set default to port_num of crin
         self.socket_rout.connect((IP, self.crin))
-
+        print("socket connected")
         self.check_file()
         open(self.file_name)
         expected = 0  # local int var
@@ -51,12 +52,13 @@ class Receiver:
         # if initialization successful then loop
         success = True
         while success:
+            print("in while")
             # wait on rin for incoming packet (use blocking call)
-            received_bytes = self.socket_rin.recv(MAX_READ_SIZE)
-            received = received_bytes.deserialize()
+            received = self.received_packet()
+            print("Packet Received")
             # once have received packet do checks
             # when different prepare ack packet
-            if not self.check_failure(received, expected):
+            if not Receiver.check_failure(received, expected):
                 self.reply_to(received)
                 continue  # return to beginning of loop
 
@@ -77,13 +79,19 @@ class Receiver:
             else:
                 continue  # return to start of loop
 
+    def received_packet(self):
+        received_string = self.socket_rin.recv(MAX_READ_SIZE)
+        received = Packet.deserialize(received_string)
+        return received
+
     def reply_to(self, received):
-        received_ack = Packet(MAGICNO, PTYPE_ACK, received.seqno, 0)
-        received_ack = received_ack.serialize()
+
+        received_ack = received.serialize()
         # send packet via rout to channel
         self.socket_rout.send(received_ack)
 
-    def check_failure(self, received_pack, expected):
+    @staticmethod
+    def check_failure(received_pack, expected):
             #  if packet is lost
             if received_pack.check_magicno() and received_pack.ptype == \
                     PTYPE_DATA or received_pack.seqno != expected:

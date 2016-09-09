@@ -35,6 +35,8 @@ class Channel:
         #  socket creation
         new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         new_socket.bind((IP, port))
+        if port == self.c_rin or port == self.c_sin:
+            new_socket.settimeout(.5)
         print("Socket Created")
         return new_socket
 
@@ -46,31 +48,41 @@ class Channel:
     def send_to(self):
         self.connect_socket()
         while True:
+            print("select")
             socket_read, _, _ = select.select([self.socket_sin,
                                                self.socket_rin], [], [])
-
+            print("Socket read")
             for sock in socket_read:
                 if not sock.check_magicno():
                     #  if the socket does not have MAGICNO correct get next
                     continue
-                received = sock.recv(MAX_READ_SIZE)
-                received = received.deserialize()
-                print("Packet Received")
-                random_var = random()
-                if random_var < self.p_rate:
-                    continue
-                elif sock == self.socket_sin:
-                    self.send_packet(self.socket_sin, received)
-                elif sock == self.socket_rin:
-                    self.send_packet(self.socket_rin, received)
+                received = Channel.rec_packet(sock)
+                #  random_var = random()
+                #  if random_var < self.p_rate:
+                #  continue
+                if sock is self.socket_sin:
+                    Channel.send_packet(self.socket_sin, received)
+                elif sock is self.socket_rin:
+                    Channel.send_packet(self.socket_rin, received)
 
-    def send_packet(self, socket1, received):
+    @staticmethod
+    def send_packet(socket1, received):
         try:
             # packet is sent on crout to rin
             received = received.serialize()
             socket1.send(received)
         except:
             print("Connection Failed")
+
+    @staticmethod
+    def rec_packet(socket1):
+        try:
+            received_bytes = socket1.recv(MAX_READ_SIZE)
+            received = Packet.deserialize(received_bytes)
+            print("Successfully Received")
+            return received
+        except:
+            print("Failed to Receive")
 
     def check_p_rate(self):
         #  check p rate

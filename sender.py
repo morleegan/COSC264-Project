@@ -1,6 +1,5 @@
 from packet_class import *  # Our initialization and checks
 import socket  # for sockets
-import select  # for listening nicely on sockets
 import os
 import sys
 import argparse
@@ -49,7 +48,7 @@ class Sender:
             exit(-1)
 
     def outer_send(self):
-        self.socket_sout.connect((IP, self.sin))
+        self.socket_sout.connect((IP, self.csin))
         sent_count = 0
 
         while not self.exit_flag:
@@ -72,14 +71,15 @@ class Sender:
     def inner_send(self, packet_sent, sent_count):
         processing = True
         while processing:
-            self.send_packet(self.socket_sout, packet_sent)
-            socket_read, socket_write, error = select.select([self.socket_sin],
-                                                             [], [], TIMEOUT)
-            if not socket_read:
+            if not self.send_packet(self.socket_sout, packet_sent):
                 continue
 
-            received = socket_read.recv(MAX_READ_SIZE)
+            if not self.socket_sin:
+                print("Not socket_in")
+                continue
 
+            received = self.socket_sin.recv(MAX_READ_SIZE)
+            print("Packet Received")
             if not received:
                 continue
             else:
@@ -99,10 +99,14 @@ class Sender:
 
     def send_packet(self, socket1, received):
         try:
-            # packet is sent on crout to rin
+            # change packet into bytes to send
+            received = received.serialize()
             socket1.send(received)
+            print("Packet sent")
+            return True
         except:
             print("Connection Failed")
+            return False
 
     def check_file(self):
         # check if supplied filename exits and is readable else exit sender

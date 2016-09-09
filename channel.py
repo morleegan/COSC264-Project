@@ -35,22 +35,26 @@ class Channel:
         #  socket creation
         new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         new_socket.bind((IP, port))
+        print("Socket Created")
         return new_socket
 
     def connect_socket(self):
         self.socket_sout.connect((IP, self.sin))
         self.socket_rout.connect((IP, self.rin))
+        print("Sockets Connected")
 
     def send_to(self):
         self.connect_socket()
         while True:
-            socket_read, _, _ = select.select([self.socket_sin, self.socket_rin], [], [])
+            socket_read, _, _ = select.select([self.socket_sin,
+                                               self.socket_rin], [], [])
 
             for sock in socket_read:
                 if not sock.check_magicno():
                     #  if the socket does not have MAGICNO correct get next
                     continue
                 received = sock.recv(MAX_READ_SIZE)
+                print("Packet Received")
                 random_var = random()
                 if random_var < self.p_rate:
                     continue

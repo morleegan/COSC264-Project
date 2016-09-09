@@ -28,10 +28,15 @@ if __name__ == "__main__":
     args.add_argument("sout", help="Sender out port", type=int)
     args.add_argument("rin", help="Receiver in port", type=int)
     args.add_argument("rout", help="Receiver out port", type=int)
+    args.add_argument("prate", help="P rate", type=float)
     args.add_argument("file_in", help="Filename of sender", type=str)
     args.add_argument("file_out", help="Filename of receiver", type=str)
     args = args.parse_args()
 
-    sender = Sender(args.csin)
-    channel = Channel(args.csin)
-    receiver = Receiver(args.csin)
+    channel = Channel(args.csin, args.csout, args.crout, args.crin,
+                      args.sin, args.rin, args.prate)
+    channel.send_to()
+    receiver = Receiver(args.rin, args.rout, args.crin, args.file_out)
+    receiver.receive_socket()
+    sender = Sender(args.sin, args.sout, args.csin, args.file_in)
+    sender.outer_send()

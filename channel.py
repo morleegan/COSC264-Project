@@ -54,6 +54,7 @@ class Channel:
                     #  if the socket does not have MAGICNO correct get next
                     continue
                 received = sock.recv(MAX_READ_SIZE)
+                received = received.deserialize()
                 print("Packet Received")
                 random_var = random()
                 if random_var < self.p_rate:
@@ -66,6 +67,7 @@ class Channel:
     def send_packet(self, socket1, received):
         try:
             # packet is sent on crout to rin
+            received = received.serialize()
             socket1.send(received)
         except:
             print("Connection Failed")

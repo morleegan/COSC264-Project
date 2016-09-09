@@ -52,8 +52,8 @@ class Receiver:
         success = True
         while success:
             # wait on rin for incoming packet (use blocking call)
-            received = self.socket_rin.recv(MAX_READ_SIZE)
-
+            received_bytes = self.socket_rin.recv(MAX_READ_SIZE)
+            received = received_bytes.deserialize()
             # once have received packet do checks
             # when different prepare ack packet
             if not self.check_failure(received, expected):
@@ -79,6 +79,7 @@ class Receiver:
 
     def reply_to(self, received):
         received_ack = Packet(MAGICNO, PTYPE_ACK, received.seqno, 0)
+        received_ack = received_ack.serialize()
         # send packet via rout to channel
         self.socket_rout.send(received_ack)
 

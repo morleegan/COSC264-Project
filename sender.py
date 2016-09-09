@@ -78,7 +78,8 @@ class Sender:
                 print("Not socket_in")
                 continue
 
-            received = self.socket_sin.recv(MAX_READ_SIZE)
+            received_bytes = self.socket_sin.recv(MAX_READ_SIZE)
+            received = received_bytes.deserialize()
             print("Packet Received")
             if not received:
                 continue

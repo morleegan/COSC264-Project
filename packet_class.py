@@ -60,6 +60,10 @@ class Packet:
                     + byte_data_len + self.data
         return byte_s
 
-    def deserialize(self):
-
-        pass
+    def deserialize(self, byte_string):
+        new_magicno = int.from_bytes(byte_string[0:1], byteorder='big')
+        new_ptype = int.from_bytes(byte_string[2], byteorder='big')
+        new_seqno = int.from_bytes(byte_string[3], byteorder='big')
+        new_dataLen = int.from_bytes(byte_string[4:5], byteorder='big')
+        return Packet(new_magicno, new_ptype, new_seqno, new_dataLen,
+                      byte_string[6:])

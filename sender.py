@@ -19,33 +19,32 @@ class Sender:
     """Sender Program"""
 
     def __init__(self, port_sin, port_sout, port_csin, file_name):
-        self.sin = port_sin
-        self.sout = port_sout
         self.csin = port_csin
         self.file_name = file_name
-        self.socket_sin = self.create_sockets(self.sin)
-        self.socket_sout = self.create_sockets(self.sout)
+        self.socket_sin = self.create_sockets(port_sin)
+        self.socket_sout = self.create_sockets(port_sout)
         self.file_in = None
         self.exit_flag = False
         self.check_file()
         self.send_next = 0
 
     def create_sockets(self, port):
-        self.check_ports()
+        self.check_ports(port)
         # create sockets
         try:
             new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             new_socket.bind((IP, port))
-            if port == self.sin:
-                new_socket.settimeout(.5)
+            # if port == self.sin:
+            new_socket.settimeout(1)
             return new_socket
         except:
             print("Failed to create socket.")
             exit(-1)
 
-    def check_ports(self):
+    @staticmethod
+    def check_ports(port):
         if all((not (1024 <= x <= 64000)) and isinstance(x, int) \
-               for x in (self.sin, self.sout)):
+               for x in [port]):
             print("Invalid Port numbers")
             exit(-1)
 
@@ -91,12 +90,10 @@ class Sender:
                             self.close_sockets()
                             print("{d}").format(sent_count)
                             exit(0)
-                        else:
-                            continue
-                    else:
-                        continue
-                else:
-                    continue
+
+                elif not self.exit_flag:
+                    processing = True
+
 
     @staticmethod
     def send_packet(socket1, received):

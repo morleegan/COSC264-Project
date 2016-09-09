@@ -93,7 +93,7 @@ class Receiver:
     @staticmethod
     def check_failure(received_pack, expected):
             #  if packet is lost
-            if received_pack.check_magicno() and received_pack.ptype == \
+            if not received_pack.check_magicno() and received_pack.ptype != \
                     PTYPE_DATA or received_pack.seqno != expected:
                 return False
 

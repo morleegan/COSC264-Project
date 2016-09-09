@@ -23,16 +23,16 @@ class Packet:
         # data: depends on dataLength and contains the user data
         self.data = data
 
-        """def check_ack_packet(self):
+    def check_ack_packet(self):
         #Checks the packet is an ack packet with length of ack packet
-        if self.ptype == PTYPE_ACK:
+        if self.p_type == PTYPE_ACK:
             if self.dataLen != 0:
             # drop packet
                 print("Corrupt Packet")
                 return False
             # raise Exception("Corrupt Packet")
             else:
-                return True"""
+                return True
 
     def check_end_data_packet(self, data_packet):
         """Checks if end of transmission"""
@@ -63,10 +63,10 @@ class Packet:
     @staticmethod
     def deserialize(byte_string):
 
-        new_magicno = int.from_bytes(byte_string[0:1], byteorder='big')
-        new_ptype = int.from_bytes(byte_string[2], byteorder='big')
-        new_seqno = int.from_bytes(byte_string[3], byteorder='big')
-        new_dataLen = int.from_bytes(byte_string[4:5], byteorder='big')
+        new_magicno = int.from_bytes(byte_string[:2], byteorder='big')
+        new_ptype = int.from_bytes(byte_string[2:3], byteorder='big')
+        new_seqno = int.from_bytes(byte_string[3:4], byteorder='big')
+        new_dataLen = int.from_bytes(byte_string[4:6], byteorder='big')
 
         return Packet(new_magicno, new_ptype, new_seqno, new_dataLen,
                       byte_string[6:])
